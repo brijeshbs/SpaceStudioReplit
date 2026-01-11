@@ -18,6 +18,7 @@ function Router() {
       <Route path="/landing" component={Landing} />
       <Route path="/login" component={Login} />
       <Route path="/dashboard" component={Dashboard} />
+      <Route path="/projects" component={Dashboard} />
       <Route path="/projects/:id" component={ProjectView} />
       <Route path="/editor/:id" component={Editor} />
 
