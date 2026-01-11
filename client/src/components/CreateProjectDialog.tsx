@@ -34,7 +34,7 @@ export function CreateProjectDialog() {
     }
 
     mutate({
-      userId: user.id, 
+      userId: "demo-user", 
       name: formData.name,
       companyType: formData.companyType,
       headcount: parseInt(formData.headcount),

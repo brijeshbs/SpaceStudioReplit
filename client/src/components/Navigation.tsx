@@ -47,11 +47,11 @@ export function Navigation() {
       <div className="p-4 border-t border-border">
         <div className="flex items-center gap-3 px-4 py-3 mb-2">
           <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center text-primary font-bold">
-            {user?.firstName?.[0] || user?.email?.[0] || "U"}
+            U
           </div>
           <div className="flex-1 overflow-hidden">
-            <p className="text-sm font-medium truncate">{user?.firstName ? `${user.firstName} ${user.lastName || ""}` : (user?.email?.split("@")[0] || "User")}</p>
-            <p className="text-xs text-muted-foreground truncate">{user?.role || "Viewer"}</p>
+            <p className="text-sm font-medium truncate">Demo User</p>
+            <p className="text-xs text-muted-foreground truncate">Administrator</p>
           </div>
         </div>
         <button
