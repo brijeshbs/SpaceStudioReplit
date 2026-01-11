@@ -18,9 +18,9 @@ export default function Dashboard() {
         <header className="flex justify-between items-end mb-10">
           <div>
             <h1 className="text-3xl font-display font-bold text-foreground">
-              Welcome back, User
+              Welcome to SpaceStudio
             </h1>
-            <p className="text-muted-foreground mt-2">Manage your office planning projects</p>
+            <p className="text-muted-foreground mt-2">Design, optimize, and export your office plans</p>
           </div>
           <CreateProjectDialog />
         </header>
