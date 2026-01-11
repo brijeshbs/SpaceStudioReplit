@@ -12,12 +12,6 @@ async function seedDatabase() {
   const existingProjects = await storage.getProjects();
   if (existingProjects.length === 0) {
     console.log("Seeding database...");
-    // Create a dummy user is not easy because user IDs are from Auth0/Replit Auth
-    // But we can create projects without checking user existence strictly if DB allows,
-    // or we just wait for the first user. 
-    // However, the schema enforces foreign key.
-    // So we can only seed public data or we skip seeding user-dependent data until a user exists.
-    // Given the constraints, let's just log.
     console.log("Database empty. Create a user via Login to start.");
   }
 }
@@ -36,7 +30,6 @@ export async function registerRoutes(
 
   // === Projects ===
   app.get(api.projects.list.path, async (req, res) => {
-    // In a real app, filter by req.user.id
     const projects = await storage.getProjects();
     res.json(projects);
   });
@@ -68,8 +61,6 @@ export async function registerRoutes(
   // === Floorplans ===
   app.post(api.floorplans.create.path, async (req, res) => {
     try {
-      // In a real app, we would handle file upload here using multer
-      // For now, we assume body contains image URL
       const projectId = Number(req.params.projectId);
       const input = api.floorplans.create.input.parse({ ...req.body, projectId });
       const floorplan = await storage.createFloorplan(input);
@@ -94,14 +85,12 @@ export async function registerRoutes(
   });
 
   app.post(api.floorplans.detect.path, async (req, res) => {
-    // Mock AI detection logic
     const floorplanId = Number(req.params.id);
     const floorplan = await storage.getFloorplan(floorplanId);
     if (!floorplan) {
        return res.status(404).json({ message: 'Floorplan not found' });
     }
 
-    // Simulate AI detection delay
     await new Promise(resolve => setTimeout(resolve, 1000));
 
     const detectedFeatures = {
@@ -126,7 +115,6 @@ export async function registerRoutes(
       const floorplanId = Number(req.params.floorplanId);
       const { name, preferences } = req.body;
       
-      // Simulate AI Generation
       await new Promise(resolve => setTimeout(resolve, 2000));
 
       const layout = await storage.createLayout({
@@ -143,7 +131,7 @@ export async function registerRoutes(
           comfortIndex: Math.random() * 100,
         },
         isFrozen: false,
-        thumbnailUrl: null // Could generate this
+        thumbnailUrl: null
       });
       res.status(201).json(layout);
     } catch (err) {
@@ -167,7 +155,6 @@ export async function registerRoutes(
     res.json(layout);
   });
 
-  // Initialize seed data
   seedDatabase();
 
   return httpServer;

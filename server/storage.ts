@@ -1,7 +1,7 @@
 import { db } from "./db";
 import {
   users, projects, floorplans, layouts,
-  type User, type InsertUser, type UpsertUser,
+  type User, type UpsertUser,
   type Project, type InsertProject,
   type Floorplan, type InsertFloorplan,
   type Layout, type InsertLayout

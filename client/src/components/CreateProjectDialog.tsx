@@ -34,7 +34,7 @@ export function CreateProjectDialog() {
     }
 
     mutate({
-      userId: user.id as unknown as number, // Casting because auth schema ID is string but project schema uses int (simulated)
+      userId: user.id, 
       name: formData.name,
       companyType: formData.companyType,
       headcount: parseInt(formData.headcount),

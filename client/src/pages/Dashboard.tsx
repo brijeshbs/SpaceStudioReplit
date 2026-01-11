@@ -18,7 +18,7 @@ export default function Dashboard() {
         <header className="flex justify-between items-end mb-10">
           <div>
             <h1 className="text-3xl font-display font-bold text-foreground">
-              Welcome back, {user?.displayName?.split(" ")[0]}
+              Welcome back, {user?.firstName || user?.email?.split("@")[0] || "User"}
             </h1>
             <p className="text-muted-foreground mt-2">Manage your office planning projects</p>
           </div>

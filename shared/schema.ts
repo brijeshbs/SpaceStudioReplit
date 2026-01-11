@@ -17,7 +17,7 @@ export const projects = pgTable("projects", {
   companyType: text("company_type").notNull(), // Tech, Finance, Creative
   headcount: integer("headcount").notNull(),
   description: text("description"),
-  createdAt: timestamp("created_at").defaultNow(),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
 });
 
 export const floorplans = pgTable("floorplans", {
@@ -33,15 +33,15 @@ export const floorplans = pgTable("floorplans", {
     windows: any[];
     core: any[];
   }>(),
-  createdAt: timestamp("created_at").defaultNow(),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
 });
 
 export const layouts = pgTable("layouts", {
   id: serial("id").primaryKey(),
   floorplanId: integer("floorplan_id").references(() => floorplans.id).notNull(),
   name: text("name").notNull(),
-  zoningData: jsonb("zoning_data").$type<any>(), // Zones definitions
-  furnitureData: jsonb("furniture_data").$type<any>(), // Placed furniture
+  zoningData: jsonb("zoning_data").$type<{ zones: any[] }>(), // Zones definitions
+  furnitureData: jsonb("furniture_data").$type<{ items: any[] }>(), // Placed furniture
   kpiScores: jsonb("kpi_scores").$type<{
     spaceEfficiency: number;
     costEfficiency: number;
@@ -52,7 +52,7 @@ export const layouts = pgTable("layouts", {
   }>(),
   isFrozen: boolean("is_frozen").default(false),
   thumbnailUrl: text("thumbnail_url"),
-  createdAt: timestamp("created_at").defaultNow(),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
 });
 
 // === BASE SCHEMAS ===
