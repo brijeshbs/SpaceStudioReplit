@@ -51,7 +51,19 @@ export default function Editor() {
 
   const handleDetect = () => {
     detectFeatures(floorplanId, {
-      onSuccess: () => toast({ title: "Detection Complete", description: "Architectural features identified." })
+      onSuccess: () => {
+        toast({ title: "Detection Complete", description: "Architectural features identified. Generating layout..." });
+        generateLayout({
+          floorplanId,
+          name: `Layout ${layouts ? layouts.length + 1 : 1}`,
+          preferences: { style: "agile" }
+        }, {
+          onSuccess: (data) => {
+            setSelectedLayoutId(data.id);
+            toast({ title: "Layout Generated", description: "Zones have been created based on the detected features." });
+          }
+        });
+      }
     });
   };
 
