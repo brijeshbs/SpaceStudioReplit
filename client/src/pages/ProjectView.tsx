@@ -6,14 +6,15 @@ import { FileUpload } from "@/components/FileUpload";
 import { Loader2, ArrowLeft, Image as ImageIcon, Ruler, ChevronRight } from "lucide-react";
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 import { useState } from "react";
-import { useCreateFloorplan } from "@/hooks/use-floorplans";
+import { useCreateFloorplan, useFloorplans } from "@/hooks/use-floorplans";
 import { useToast } from "@/hooks/use-toast";
-import { format } from "date-fns";
+import { queryClient } from "@/lib/queryClient";
 
 export default function ProjectView() {
   const { id } = useParams();
   const projectId = Number(id);
   const { data: project, isLoading } = useProject(projectId);
+  const { data: floorplans, isLoading: isLoadingPlans } = useFloorplans(projectId);
   const { mutate: uploadFloorplan, isPending: isUploading } = useCreateFloorplan();
   const { toast } = useToast();
   const [uploadOpen, setUploadOpen] = useState(false);
@@ -23,18 +24,17 @@ export default function ProjectView() {
     reader.onload = (e) => {
       const imageUrl = e.target?.result as string;
       
-      // In a real app, we'd upload to S3/Blob storage here.
-      // For this demo, we're sending the base64 string directly (not recommended for prod)
       uploadFloorplan({
         projectId,
         name: file.name.split('.')[0],
         originalFilename: file.name,
-        imageUrl: imageUrl, // Base64 string
+        imageUrl: imageUrl, 
         scale: 1.0,
         features: { walls: [], columns: [], windows: [], core: [] }
       }, {
         onSuccess: () => {
           setUploadOpen(false);
+          queryClient.invalidateQueries({ queryKey: [`/api/projects/${projectId}/floorplans`] });
           toast({ title: "Success", description: "Floorplan uploaded successfully" });
         },
         onError: () => {
@@ -45,7 +45,7 @@ export default function ProjectView() {
     reader.readAsDataURL(file);
   };
 
-  if (isLoading) return <div className="h-screen flex items-center justify-center"><Loader2 className="w-8 h-8 animate-spin" /></div>;
+  if (isLoading || isLoadingPlans) return <div className="h-screen flex items-center justify-center"><Loader2 className="w-8 h-8 animate-spin" /></div>;
   if (!project) return <div className="p-8">Project not found</div>;
 
   return (
@@ -83,13 +83,9 @@ export default function ProjectView() {
         <div className="grid gap-6">
           <h2 className="text-xl font-semibold">Floorplans</h2>
           
-          {/* Note: In a real implementation, project.floorplans would be populated by the backend join */}
-          {/* Assuming backend returns it based on type definition in schema prompt */}
-          {/* @ts-ignore - Assuming extended type */}
-          {project.floorplans && project.floorplans.length > 0 ? (
+          {floorplans && floorplans.length > 0 ? (
              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {/* @ts-ignore */}
-               {project.floorplans.map((floorplan: any) => (
+               {floorplans.map((floorplan) => (
                  <Link key={floorplan.id} href={`/editor/${floorplan.id}`}>
                    <div className="group bg-card border border-border rounded-xl overflow-hidden hover:shadow-lg transition-all cursor-pointer">
                      <div className="aspect-[4/3] bg-muted relative overflow-hidden">
