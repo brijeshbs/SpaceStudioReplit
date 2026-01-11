@@ -55,7 +55,7 @@ export default function Editor() {
     });
   };
 
-  const handleExport = () => {
+  const handleExport = async () => {
     if (!selectedLayout) {
       toast({ title: "No Layout Selected", description: "Please generate a layout first.", variant: "destructive" });
       return;
@@ -63,31 +63,62 @@ export default function Editor() {
 
     const doc = new jsPDF();
     const pageWidth = doc.internal.pageSize.getWidth();
+    const pageHeight = doc.internal.pageSize.getHeight();
+    const scaleFactor = floorplan?.scale || 1;
+    const pixelsPerFoot = 10 * scaleFactor;
     
     doc.setFontSize(24);
     doc.setTextColor(33, 33, 33);
-    doc.text("SpaceStudio Report", pageWidth / 2, 25, { align: "center" });
+    doc.text("SpaceStudio Report", pageWidth / 2, 20, { align: "center" });
     
-    doc.setFontSize(12);
+    doc.setFontSize(10);
     doc.setTextColor(100, 100, 100);
-    doc.text(`Generated: ${new Date().toLocaleDateString()}`, pageWidth / 2, 33, { align: "center" });
+    doc.text(`Generated: ${new Date().toLocaleDateString()}`, pageWidth / 2, 28, { align: "center" });
     
     doc.setDrawColor(200, 200, 200);
-    doc.line(20, 40, pageWidth - 20, 40);
+    doc.line(20, 32, pageWidth - 20, 32);
     
-    doc.setFontSize(16);
+    if (floorplan?.imageUrl) {
+      try {
+        const img = new Image();
+        img.crossOrigin = "anonymous";
+        await new Promise<void>((resolve, reject) => {
+          img.onload = () => resolve();
+          img.onerror = () => reject();
+          img.src = floorplan.imageUrl;
+        });
+        
+        const imgWidth = 170;
+        const imgHeight = (img.height / img.width) * imgWidth;
+        const maxHeight = 80;
+        const finalHeight = Math.min(imgHeight, maxHeight);
+        const finalWidth = (finalHeight / imgHeight) * imgWidth;
+        
+        doc.addImage(img, "JPEG", (pageWidth - finalWidth) / 2, 36, finalWidth, finalHeight);
+        
+        doc.setFontSize(8);
+        doc.setTextColor(120, 120, 120);
+        doc.text("Floorplan Overview", pageWidth / 2, 36 + finalHeight + 5, { align: "center" });
+      } catch (e) {
+        console.log("Could not load floorplan image for PDF");
+      }
+    }
+    
+    const detailsY = floorplan?.imageUrl ? 130 : 45;
+    
+    doc.setFontSize(14);
     doc.setTextColor(33, 33, 33);
-    doc.text("Floorplan Details", 20, 55);
+    doc.text("Project Details", 20, detailsY);
     
-    doc.setFontSize(11);
+    doc.setFontSize(10);
     doc.setTextColor(80, 80, 80);
-    doc.text(`Name: ${floorplan?.name || "N/A"}`, 25, 65);
-    doc.text(`Layout: ${selectedLayout.name}`, 25, 73);
-    doc.text(`Scale: ${floorplan?.scale || 1}x`, 25, 81);
+    doc.text(`Floorplan: ${floorplan?.name || "N/A"}`, 25, detailsY + 8);
+    doc.text(`Layout: ${selectedLayout.name}`, 25, detailsY + 15);
+    doc.text(`Scale: 1 pixel = ${(1/pixelsPerFoot).toFixed(2)} ft`, 25, detailsY + 22);
     
-    doc.setFontSize(16);
+    doc.setFontSize(14);
     doc.setTextColor(33, 33, 33);
-    doc.text("KPI Performance Scores", 20, 100);
+    doc.text("KPI Performance Scores", 20, detailsY + 38);
     
     const kpiScores = selectedLayout.kpiScores;
     const kpiTableData = [
@@ -100,46 +131,51 @@ export default function Editor() {
     ];
     
     autoTable(doc, {
-      startY: 105,
+      startY: detailsY + 42,
       head: [["Metric", "Score"]],
       body: kpiTableData,
       theme: "striped",
       headStyles: { fillColor: [59, 130, 246], textColor: 255 },
-      styles: { fontSize: 10, cellPadding: 4 },
+      styles: { fontSize: 9, cellPadding: 3 },
       columnStyles: { 0: { fontStyle: "bold" } },
     });
     
-    const zonesY = (doc as any).lastAutoTable.finalY + 15;
+    const zonesY = (doc as any).lastAutoTable.finalY + 10;
     
-    doc.setFontSize(16);
+    doc.setFontSize(14);
     doc.setTextColor(33, 33, 33);
     doc.text("Zone Breakdown", 20, zonesY);
     
     const zones = selectedLayout.zoningData?.zones || [];
     if (zones.length > 0) {
-      const zoneTableData = zones.map((zone: any) => [
-        zone.name,
-        `${zone.width}x${zone.height}`,
-        `${zone.width * zone.height} sq units`
-      ]);
+      const zoneTableData = zones.map((zone: any) => {
+        const widthFt = (zone.width / pixelsPerFoot).toFixed(1);
+        const heightFt = (zone.height / pixelsPerFoot).toFixed(1);
+        const areaSqFt = ((zone.width * zone.height) / (pixelsPerFoot * pixelsPerFoot)).toFixed(1);
+        return [
+          zone.name,
+          `${widthFt} ft x ${heightFt} ft`,
+          `${areaSqFt} sq ft`
+        ];
+      });
       
       autoTable(doc, {
-        startY: zonesY + 5,
+        startY: zonesY + 4,
         head: [["Zone Name", "Dimensions", "Area"]],
         body: zoneTableData,
         theme: "striped",
         headStyles: { fillColor: [34, 197, 94], textColor: 255 },
-        styles: { fontSize: 10, cellPadding: 4 },
+        styles: { fontSize: 9, cellPadding: 3 },
       });
     } else {
-      doc.setFontSize(10);
+      doc.setFontSize(9);
       doc.setTextColor(150, 150, 150);
-      doc.text("No zones defined in this layout.", 25, zonesY + 10);
+      doc.text("No zones defined in this layout.", 25, zonesY + 8);
     }
     
     doc.setFontSize(8);
     doc.setTextColor(150, 150, 150);
-    doc.text("Generated by SpaceStudio - AI-Powered Office Planning", pageWidth / 2, doc.internal.pageSize.getHeight() - 10, { align: "center" });
+    doc.text("Generated by SpaceStudio - AI-Powered Office Planning", pageWidth / 2, pageHeight - 10, { align: "center" });
     
     doc.save(`${floorplan?.name || "layout"}-report.pdf`);
     toast({ title: "Report Exported", description: "PDF report has been downloaded." });
