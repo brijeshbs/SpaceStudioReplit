@@ -99,11 +99,32 @@ export async function registerRoutes(
 
     await new Promise(resolve => setTimeout(resolve, 1000));
 
+    const imgWidth = 800;
+    const imgHeight = 600;
+    
     const detectedFeatures = {
-      walls: [{ x1: 0, y1: 0, x2: 100, y2: 0, type: 'concrete' }],
-      columns: [{ x: 50, y: 50, radius: 5 }],
-      windows: [],
-      core: []
+      walls: [
+        { points: [50, 50, imgWidth - 50, 50], type: 'exterior' },
+        { points: [imgWidth - 50, 50, imgWidth - 50, imgHeight - 50], type: 'exterior' },
+        { points: [imgWidth - 50, imgHeight - 50, 50, imgHeight - 50], type: 'exterior' },
+        { points: [50, imgHeight - 50, 50, 50], type: 'exterior' },
+        { points: [50, 200, 300, 200], type: 'interior' },
+        { points: [400, 50, 400, 300], type: 'interior' },
+      ],
+      columns: [
+        { x: 200, y: 150, radius: 10 },
+        { x: 500, y: 150, radius: 10 },
+        { x: 200, y: 400, radius: 10 },
+        { x: 500, y: 400, radius: 10 },
+      ],
+      windows: [
+        { x: 100, y: 50, width: 80, height: 10 },
+        { x: 300, y: 50, width: 80, height: 10 },
+        { x: 550, y: 50, width: 80, height: 10 },
+      ],
+      core: [
+        { x: 350, y: 250, width: 100, height: 100, type: 'elevator' }
+      ]
     };
 
     const updated = await storage.updateFloorplanFeatures(floorplanId, detectedFeatures);
@@ -123,18 +144,29 @@ export async function registerRoutes(
       
       await new Promise(resolve => setTimeout(resolve, 2000));
 
+      const zoneColors = ['#3b82f6', '#8b5cf6', '#10b981', '#f59e0b', '#ef4444'];
+      const zoneTypes = ['Open Office', 'Meeting Room', 'Focus Zone', 'Collaboration', 'Break Area'];
+      
+      const zones = [
+        { x: 60, y: 60, width: 280, height: 130, name: zoneTypes[0], color: zoneColors[0] },
+        { x: 410, y: 60, width: 280, height: 180, name: zoneTypes[1], color: zoneColors[1] },
+        { x: 60, y: 210, width: 280, height: 180, name: zoneTypes[2], color: zoneColors[2] },
+        { x: 410, y: 310, width: 280, height: 180, name: zoneTypes[3], color: zoneColors[3] },
+        { x: 60, y: 410, width: 280, height: 130, name: zoneTypes[4], color: zoneColors[4] },
+      ];
+
       const layout = await storage.createLayout({
         floorplanId,
         name: name || `Generated Layout ${Date.now()}`,
-        zoningData: { zones: [] },
+        zoningData: { zones },
         furnitureData: { items: [] },
         kpiScores: {
-          spaceEfficiency: Math.random() * 100,
-          costEfficiency: Math.random() * 100,
-          carbonEfficiency: Math.random() * 100,
-          productivityIndex: Math.random() * 100,
-          collaborationScore: Math.random() * 100,
-          comfortIndex: Math.random() * 100,
+          spaceEfficiency: 50 + Math.random() * 50,
+          costEfficiency: 50 + Math.random() * 50,
+          carbonEfficiency: 50 + Math.random() * 50,
+          productivityIndex: 50 + Math.random() * 50,
+          collaborationScore: 50 + Math.random() * 50,
+          comfortIndex: 50 + Math.random() * 50,
         },
         isFrozen: false,
         thumbnailUrl: null

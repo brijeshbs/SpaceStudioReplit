@@ -130,16 +130,90 @@ export default function Editor() {
                 />
               )}
               
-              {/* Floorplan Features */}
+              {/* Floorplan Features - Walls */}
               {floorplan.features?.walls?.map((wall: any, i: number) => (
-                <Line key={`wall-${i}`} points={wall.points} stroke="#475569" strokeWidth={3} lineCap="round" lineJoin="round" />
+                <Line 
+                  key={`wall-${i}`} 
+                  points={wall.points || [wall.x1, wall.y1, wall.x2, wall.y2]} 
+                  stroke={wall.type === 'exterior' ? '#1e293b' : '#64748b'} 
+                  strokeWidth={wall.type === 'exterior' ? 6 : 3} 
+                  lineCap="round" 
+                  lineJoin="round" 
+                />
+              ))}
+
+              {/* Floorplan Features - Columns */}
+              {floorplan.features?.columns?.map((col: any, i: number) => (
+                <Circle 
+                  key={`col-${i}`} 
+                  x={col.x} 
+                  y={col.y} 
+                  radius={col.radius || 8} 
+                  fill="#374151" 
+                  stroke="#1f2937" 
+                  strokeWidth={2} 
+                />
+              ))}
+
+              {/* Floorplan Features - Windows */}
+              {floorplan.features?.windows?.map((win: any, i: number) => (
+                <Rect 
+                  key={`win-${i}`} 
+                  x={win.x} 
+                  y={win.y} 
+                  width={win.width} 
+                  height={win.height} 
+                  fill="#38bdf8" 
+                  stroke="#0ea5e9" 
+                  strokeWidth={1} 
+                />
+              ))}
+
+              {/* Floorplan Features - Core Areas */}
+              {floorplan.features?.core?.map((core: any, i: number) => (
+                <Group key={`core-${i}`}>
+                  <Rect 
+                    x={core.x} 
+                    y={core.y} 
+                    width={core.width} 
+                    height={core.height} 
+                    fill="#e5e7eb" 
+                    stroke="#9ca3af" 
+                    strokeWidth={2} 
+                  />
+                  <Text 
+                    x={core.x + 10} 
+                    y={core.y + core.height / 2 - 6} 
+                    text={core.type?.toUpperCase() || 'CORE'} 
+                    fontSize={12} 
+                    fill="#6b7280" 
+                    fontStyle="bold" 
+                  />
+                </Group>
               ))}
 
               {/* Layout Zoning */}
               {selectedLayout?.zoningData?.zones?.map((zone: any, i: number) => (
                 <Group key={`zone-${i}`}>
-                  <Rect x={zone.x} y={zone.y} width={zone.width} height={zone.height} fill={zone.color} opacity={0.3} stroke={zone.color} strokeWidth={2} />
-                  <Text x={zone.x + 5} y={zone.y + 5} text={zone.name} fontSize={14} fill={zone.color} fontStyle="bold" />
+                  <Rect 
+                    x={zone.x} 
+                    y={zone.y} 
+                    width={zone.width} 
+                    height={zone.height} 
+                    fill={zone.color} 
+                    opacity={0.25} 
+                    stroke={zone.color} 
+                    strokeWidth={2} 
+                    cornerRadius={8}
+                  />
+                  <Text 
+                    x={zone.x + 10} 
+                    y={zone.y + 10} 
+                    text={zone.name} 
+                    fontSize={14} 
+                    fill={zone.color} 
+                    fontStyle="bold" 
+                  />
                 </Group>
               ))}
             </Layer>
