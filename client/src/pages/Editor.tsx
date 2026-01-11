@@ -348,15 +348,16 @@ export default function Editor() {
           </Stage>
 
           <div className="absolute bottom-6 left-6 flex gap-2">
-             {layouts?.map((l) => (
+             {layouts?.map((l, index) => (
                <Button 
                 key={l.id} 
                 variant={selectedLayoutId === l.id ? "default" : "outline"}
                 size="sm"
                 className="h-8 text-xs font-bold"
                 onClick={() => setSelectedLayoutId(l.id)}
+                data-testid={`button-layout-${l.id}`}
                >
-                 Option {l.id}
+                 {l.name || `Layout ${index + 1}`}
                </Button>
              ))}
           </div>
