@@ -63,7 +63,7 @@ export async function registerRoutes(
     try {
       const projectId = Number(req.params.projectId);
       const input = api.floorplans.create.input.parse({ ...req.body, projectId });
-      const floorplan = await storage.createFloorplan(input);
+      const floorplan = await storage.createFloorplan({ ...input, projectId });
       res.status(201).json(floorplan);
     } catch (err) {
        if (err instanceof z.ZodError) {
