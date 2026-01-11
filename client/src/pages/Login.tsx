@@ -37,14 +37,22 @@ export default function Login() {
               Since we are using Replit Auth (mocked via use-auth), we redirect to the auth endpoint.
             */}
             <Button className="w-full" onClick={() => window.location.href = "/api/login"}>
-              Sign In with Replit (Demo)
+              Continue with Replit
             </Button>
 
-            <div className="text-center text-sm text-muted-foreground mt-4">
-              Don't have an account?{" "}
-              <Link href="/login" className="text-primary hover:underline">
-                Sign up
-              </Link>
+            <div className="relative my-4">
+              <div className="absolute inset-0 flex items-center">
+                <span className="w-full border-t" />
+              </div>
+              <div className="relative flex justify-center text-xs uppercase">
+                <span className="bg-card px-2 text-muted-foreground">Demo Credentials</span>
+              </div>
+            </div>
+
+            <div className="bg-muted p-3 rounded-lg text-sm space-y-1">
+              <p><strong>Email:</strong> demo@spacestudio.ai</p>
+              <p><strong>Password:</strong> spacestudio2026</p>
+              <p className="text-xs text-muted-foreground mt-2 italic">Note: Use the "Continue with Replit" button above to access the demo account instantly.</p>
             </div>
           </CardContent>
         </Card>
