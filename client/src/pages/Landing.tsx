@@ -18,7 +18,7 @@ export default function Landing() {
             <Link href="/login" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
               Sign In
             </Link>
-            <Link href="/signup">
+            <Link href="/login">
               <Button>Get Started</Button>
             </Link>
           </div>
@@ -35,7 +35,7 @@ export default function Landing() {
           Maximize efficiency, comfort, and productivity instantly.
         </p>
         <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-          <Link href="/signup">
+          <Link href="/login">
             <Button size="lg" className="h-12 px-8 text-lg shadow-xl shadow-primary/20">
               Start Designing Free
               <ArrowRight className="ml-2 w-5 h-5" />
