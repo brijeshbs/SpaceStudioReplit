@@ -2,6 +2,19 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { api, buildUrl } from "@shared/routes";
 import type { InsertFloorplan } from "@shared/schema";
 
+export function useFloorplans(projectId: number) {
+  return useQuery({
+    queryKey: [api.projects.get.path, projectId, "floorplans"],
+    queryFn: async () => {
+      const url = buildUrl(api.floorplans.create.path, { projectId });
+      const res = await fetch(url, { credentials: "include" });
+      if (!res.ok) throw new Error("Failed to fetch floorplans");
+      return await res.json() as any[];
+    },
+    enabled: !!projectId,
+  });
+}
+
 export function useFloorplan(id: number) {
   return useQuery({
     queryKey: [api.floorplans.get.path, id],
@@ -20,8 +33,6 @@ export function useCreateFloorplan() {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: async ({ projectId, ...data }: InsertFloorplan & { projectId: number }) => {
-      // Note: input schema excludes projectId from body because it's in URL
-      // But we need projectId to build the URL
       const url = buildUrl(api.floorplans.create.path, { projectId });
       
       const res = await fetch(url, {
@@ -41,8 +52,7 @@ export function useCreateFloorplan() {
       return api.floorplans.create.responses[201].parse(await res.json());
     },
     onSuccess: (data) => {
-      // Invalidate the project query to refresh the floorplan list if it were embedded
-      queryClient.invalidateQueries({ queryKey: [api.projects.get.path, data.projectId] });
+      queryClient.invalidateQueries({ queryKey: [api.projects.get.path, data.projectId, "floorplans"] });
     },
   });
 }

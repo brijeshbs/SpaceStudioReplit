@@ -9,6 +9,7 @@ import { useState } from "react";
 import { useCreateFloorplan, useFloorplans } from "@/hooks/use-floorplans";
 import { useToast } from "@/hooks/use-toast";
 import { queryClient } from "@/lib/queryClient";
+import { api } from "@shared/routes";
 
 export default function ProjectView() {
   const { id } = useParams();
@@ -34,7 +35,7 @@ export default function ProjectView() {
       }, {
         onSuccess: () => {
           setUploadOpen(false);
-          queryClient.invalidateQueries({ queryKey: [`/api/projects/${projectId}/floorplans`] });
+          queryClient.invalidateQueries({ queryKey: [api.projects.get.path, projectId, "floorplans"] });
           toast({ title: "Success", description: "Floorplan uploaded successfully" });
         },
         onError: () => {
@@ -85,7 +86,7 @@ export default function ProjectView() {
           
           {floorplans && floorplans.length > 0 ? (
              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-               {floorplans.map((floorplan) => (
+               {floorplans.map((floorplan: any) => (
                  <Link key={floorplan.id} href={`/editor/${floorplan.id}`}>
                    <div className="group bg-card border border-border rounded-xl overflow-hidden hover:shadow-lg transition-all cursor-pointer">
                      <div className="aspect-[4/3] bg-muted relative overflow-hidden">
