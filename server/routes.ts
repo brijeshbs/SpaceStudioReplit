@@ -7,6 +7,21 @@ import { setupAuth, registerAuthRoutes } from "./replit_integrations/auth";
 import { registerChatRoutes } from "./replit_integrations/chat";
 import { registerImageRoutes } from "./replit_integrations/image";
 
+// Helper for initial data seeding
+async function seedDatabase() {
+  const existingProjects = await storage.getProjects();
+  if (existingProjects.length === 0) {
+    console.log("Seeding database...");
+    // Create a dummy user is not easy because user IDs are from Auth0/Replit Auth
+    // But we can create projects without checking user existence strictly if DB allows,
+    // or we just wait for the first user. 
+    // However, the schema enforces foreign key.
+    // So we can only seed public data or we skip seeding user-dependent data until a user exists.
+    // Given the constraints, let's just log.
+    console.log("Database empty. Create a user via Login to start.");
+  }
+}
+
 export async function registerRoutes(
   httpServer: Server,
   app: Express
@@ -21,6 +36,7 @@ export async function registerRoutes(
 
   // === Projects ===
   app.get(api.projects.list.path, async (req, res) => {
+    // In a real app, filter by req.user.id
     const projects = await storage.getProjects();
     res.json(projects);
   });
@@ -150,6 +166,9 @@ export async function registerRoutes(
     }
     res.json(layout);
   });
+
+  // Initialize seed data
+  seedDatabase();
 
   return httpServer;
 }
