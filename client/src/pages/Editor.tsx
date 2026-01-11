@@ -15,7 +15,7 @@ import { cn } from "@/lib/utils";
 import { useToast } from "@/hooks/use-toast";
 import { Radar, RadarChart, PolarGrid, PolarAngleAxis, ResponsiveContainer } from "recharts";
 import jsPDF from "jspdf";
-import "jspdf-autotable";
+import autoTable from "jspdf-autotable";
 
 export default function Editor() {
   const { id } = useParams();
@@ -99,7 +99,7 @@ export default function Editor() {
       ["Comfort Index", `${Math.round(kpiScores?.comfortIndex || 0)}%`],
     ];
     
-    (doc as any).autoTable({
+    autoTable(doc, {
       startY: 105,
       head: [["Metric", "Score"]],
       body: kpiTableData,
@@ -123,7 +123,7 @@ export default function Editor() {
         `${zone.width * zone.height} sq units`
       ]);
       
-      (doc as any).autoTable({
+      autoTable(doc, {
         startY: zonesY + 5,
         head: [["Zone Name", "Dimensions", "Area"]],
         body: zoneTableData,
