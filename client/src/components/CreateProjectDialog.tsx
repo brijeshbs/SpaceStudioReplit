@@ -7,14 +7,11 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Textarea } from "@/components/ui/textarea";
 import { Plus, Loader2 } from "lucide-react";
 import { useCreateProject } from "@/hooks/use-projects";
-import { useAuth } from "@/hooks/use-auth";
-import { z } from "zod";
 import { useToast } from "@/hooks/use-toast";
 
 export function CreateProjectDialog() {
   const [open, setOpen] = useState(false);
   const { mutate, isPending } = useCreateProject();
-  const { user } = useAuth();
   const { toast } = useToast();
 
   const [formData, setFormData] = useState({
@@ -26,7 +23,6 @@ export function CreateProjectDialog() {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!user) return;
 
     if (!formData.name || !formData.headcount) {
       toast({ title: "Error", description: "Name and headcount are required", variant: "destructive" });
