@@ -9,7 +9,7 @@ import {
   Loader2, ArrowLeft, MousePointer, 
   Square, Layout as LayoutIcon, Wand2, 
   Maximize, Settings2, Download, 
-  ZoomIn, ZoomOut, Save, RefreshCw
+  ZoomIn, ZoomOut, Save, RefreshCw, PieChart
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useToast } from "@/hooks/use-toast";
@@ -91,7 +91,7 @@ export default function Editor() {
             {isGenerating ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <RefreshCw className="w-4 h-4 mr-2" />}
             Generate Layout
           </Button>
-          <Button size="sm" variant="accent">
+          <Button size="sm" variant="secondary">
             <Save className="w-4 h-4 mr-2" />
             Freeze Layout
           </Button>
