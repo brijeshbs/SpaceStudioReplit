@@ -35,7 +35,7 @@ export default function ProjectView() {
       }, {
         onSuccess: () => {
           setUploadOpen(false);
-          queryClient.invalidateQueries({ queryKey: [api.projects.get.path, projectId, "floorplans"] });
+          queryClient.invalidateQueries({ queryKey: [api.floorplans.list.path, projectId] });
           toast({ title: "Success", description: "Floorplan uploaded successfully" });
         },
         onError: () => {

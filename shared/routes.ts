@@ -50,6 +50,13 @@ export const api = {
     },
   },
   floorplans: {
+    list: {
+      method: 'GET' as const,
+      path: '/api/projects/:projectId/floorplans',
+      responses: {
+        200: z.array(z.custom<typeof floorplans.$inferSelect>()),
+      },
+    },
     create: {
       method: 'POST' as const,
       path: '/api/projects/:projectId/floorplans',

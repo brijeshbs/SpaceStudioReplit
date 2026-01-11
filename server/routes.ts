@@ -59,6 +59,12 @@ export async function registerRoutes(
   });
 
   // === Floorplans ===
+  app.get(api.floorplans.list.path, async (req, res) => {
+    const projectId = Number(req.params.projectId);
+    const floorplansList = await storage.getFloorplansByProject(projectId);
+    res.json(floorplansList);
+  });
+
   app.post(api.floorplans.create.path, async (req, res) => {
     try {
       const projectId = Number(req.params.projectId);

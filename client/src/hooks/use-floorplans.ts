@@ -4,9 +4,9 @@ import type { InsertFloorplan } from "@shared/schema";
 
 export function useFloorplans(projectId: number) {
   return useQuery({
-    queryKey: [api.projects.get.path, projectId, "floorplans"],
+    queryKey: [api.floorplans.list.path, projectId],
     queryFn: async () => {
-      const url = buildUrl(api.floorplans.create.path, { projectId });
+      const url = buildUrl(api.floorplans.list.path, { projectId });
       const res = await fetch(url, { credentials: "include" });
       if (!res.ok) throw new Error("Failed to fetch floorplans");
       return await res.json() as any[];
@@ -52,7 +52,7 @@ export function useCreateFloorplan() {
       return api.floorplans.create.responses[201].parse(await res.json());
     },
     onSuccess: (data) => {
-      queryClient.invalidateQueries({ queryKey: [api.projects.get.path, data.projectId, "floorplans"] });
+      queryClient.invalidateQueries({ queryKey: [api.floorplans.list.path, data.projectId] });
     },
   });
 }
